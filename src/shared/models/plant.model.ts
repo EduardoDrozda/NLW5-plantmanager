@@ -11,6 +11,6 @@ export interface IPlant {
   photo: string;
   environments: string[];
   frequency: IFrequency
-  dateTimeNotification?: Date;
+  dateTimeNotification: Date;
   hour?: string;
 }

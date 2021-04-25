@@ -7,6 +7,7 @@ import StorageService from "./storage-service";
 import { StorageKeyEnum } from "../enums";
 import { format } from 'date-fns';
 import { DateUtils } from "../utils";
+import { Guid } from 'guid-typescript';
 
 class PlantService extends HttpService<IPlant> implements IGenericService<IPlant> {
   constructor() {
@@ -23,18 +24,18 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
 
   async savePlant(plant: IPlant) {
     try {
-
+      console.log(plant);
       const oldPlants = await this.getStoragePlants();
       const newPlant: IStoragePlant = {
-        [plant.id]: {
+        [Guid.create().toString()]: {
           data: plant
         }
       }
 
       await StorageService.setItem(StorageKeyEnum.PLANTS,
         JSON.stringify({
+          ...oldPlants,
           ...newPlant,
-          ...oldPlants
         })
       );
     } catch (error) {
@@ -45,10 +46,8 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
 
   private async getStoragePlants(): Promise<IStoragePlant> {
     try {
-
       const data = await StorageService.getItem(StorageKeyEnum.PLANTS);
       return data ? (JSON.parse(data) as IStoragePlant): {};
-
     } catch (error) {
       throw new Error(error);
       
@@ -64,13 +63,13 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
         .map((plant) => {
           return {
             ...plants[plant].data,
-            hour: format(new Date(plants[plant].data.dateTimeNotification!), 'HH:mm')
+            hour: format(new Date(plants[plant].data.dateTimeNotification), 'HH:mm')
           }
         })
         .sort((a, b) => DateUtils
           .getDifferenceTime(
-            new Date(a.dateTimeNotification!), 
-            new Date(b.dateTimeNotification!))
+            new Date(a.dateTimeNotification), 
+            new Date(b.dateTimeNotification))
           )
 
       return plansSorted;

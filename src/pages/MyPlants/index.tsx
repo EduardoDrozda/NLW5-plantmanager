@@ -28,15 +28,17 @@ export default function MyPlants() {
   useEffect(() => {
     async function loadStorageDate() {
       const plantsStoraged = await PlantService.loadPlant();
+      let nextWateredMessage = 'Não há plantas para serem regadas. 😊';
 
-      const nextTime = DateUtils.getDistanceBeetweenDates(
-        new Date(plantsStoraged[0].dateTimeNotification!),
-        new Date()
-      );
+      if(plantsStoraged.length) {
+        const nextTime = DateUtils.getDistanceBeetweenDates(
+          new Date(plantsStoraged[0].dateTimeNotification),
+          new Date()
+        );
+        nextWateredMessage = `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime}.`;
+      }
 
-      setNextWatered(
-        `Não esqueça de regar a ${plantsStoraged[0].name} à ${nextTime}.`
-      );
+      setNextWatered(nextWateredMessage);
 
       setMyPlants(plantsStoraged)
       setLoading(false)
@@ -66,7 +68,7 @@ export default function MyPlants() {
         </Text>
         <FlatList 
           data={myPlants}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={(_, index) => String(index)}
           renderItem={({ item: { name, photo, hour } }) => (
             <PlantCardSecondary 
               data={{
