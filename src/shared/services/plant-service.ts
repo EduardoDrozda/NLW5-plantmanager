@@ -24,11 +24,15 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
 
   async savePlant(plant: IPlant) {
     try {
-      console.log(plant);
       const oldPlants = await this.getStoragePlants();
+      const id = Guid.create().toString();
+
       const newPlant: IStoragePlant = {
-        [Guid.create().toString()]: {
-          data: plant
+        [id]: {
+          data: {
+            ...plant,
+            identification: id
+          }
         }
       }
 
@@ -44,7 +48,7 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
     }
   }
 
-  private async getStoragePlants(): Promise<IStoragePlant> {
+  async getStoragePlants(): Promise<IStoragePlant> {
     try {
       const data = await StorageService.getItem(StorageKeyEnum.PLANTS);
       return data ? (JSON.parse(data) as IStoragePlant): {};
@@ -52,6 +56,13 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
       throw new Error(error);
       
     }
+  }
+
+  async setStoragePlants(plants: IStoragePlant): Promise<void> {
+    await StorageService.setItem(
+      StorageKeyEnum.PLANTS,
+      JSON.stringify(plants)
+    );
   }
 
   async loadPlant(): Promise<IPlant[]> {

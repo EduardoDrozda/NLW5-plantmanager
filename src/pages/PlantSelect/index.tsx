@@ -153,10 +153,7 @@ export function PlantSelect() {
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <PlantCardPrimary 
-              data={{ 
-                name: item.name, 
-                photo: item.photo
-              }}
+              data={item}
               onPress={() => handlePlantSelect(item)}
             />
           )}

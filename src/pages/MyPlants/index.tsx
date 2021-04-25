@@ -4,7 +4,8 @@ import {
   View,
   Text,
   Image,
-  FlatList
+  FlatList,
+  Alert
  } from "react-native";
 import { CustomAreaView } from '../../shared/components/CustomAreaView';
 
@@ -18,12 +19,39 @@ import PlantService from '../../shared/services/plant-service';
 import { DateUtils } from '../../shared/utils';
 import fonts from '../../shared/styles/fonts';
 import { PlantCardSecondary } from '../../shared/components/PlantCardSecondary';
+import { Load } from '../../shared/components/Load';
 
 export default function MyPlants() {
 
   const [myPlants, setMyPlants] = useState<IPlant[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextWatered, setNextWatered] = useState<string>();
+
+  function handleRemove(plant: IPlant) {
+    Alert.alert(
+      'Remover', 
+      `Deseja remover a ${plant.name} com o horário para às ${plant.hour}?`, 
+      [
+        {
+          text: 'Não',
+          style: 'cancel'
+        },
+        {
+          text: 'Sim 😢',
+          onPress: async () => {
+            try {
+              const plants = await PlantService.getStoragePlants();
+              delete plants[plant.identification];
+              await PlantService.setStoragePlants(plants);
+              setMyPlants((oldData) => oldData.filter((item) => item.identification !== plant.identification));
+            } catch (error) {
+              Alert.alert('Não foi possível remover! 😢')
+            }
+          } 
+        }
+      ]
+    );
+  }
 
   useEffect(() => {
     async function loadStorageDate() {
@@ -47,6 +75,10 @@ export default function MyPlants() {
     loadStorageDate();
   }, [])
 
+  if (loading) {
+    return (<Load />)
+  }
+
   return (
     <CustomAreaView style={styles.container}>
       <Header />
@@ -69,13 +101,10 @@ export default function MyPlants() {
         <FlatList 
           data={myPlants}
           keyExtractor={(_, index) => String(index)}
-          renderItem={({ item: { name, photo, hour } }) => (
+          renderItem={({ item }) => (
             <PlantCardSecondary 
-              data={{
-                name,
-                photo,
-                hour: String(hour)
-              }}
+              data={item}
+              handleRemove={() => handleRemove(item)}
             />
           )}
           showsVerticalScrollIndicator={false}

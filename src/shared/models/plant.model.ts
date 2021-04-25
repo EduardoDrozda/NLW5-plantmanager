@@ -5,6 +5,7 @@ interface IFrequency {
 
 export interface IPlant {
   id: string;
+  identification: string;
   name: string;
   about: string;
   water_tips: string;
@@ -12,5 +13,5 @@ export interface IPlant {
   environments: string[];
   frequency: IFrequency
   dateTimeNotification: Date;
-  hour?: string;
+  hour: string;
 }
