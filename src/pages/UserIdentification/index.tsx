@@ -7,13 +7,16 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Platform,
-  Keyboard
+  Keyboard,
+  Alert
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/core';
-
 import { Button } from '../../shared/components/Button';
 import { CustomAreaView } from '../../shared/components/CustomAreaView';
+import { StorageKeyEnum } from '../../shared/enums';
+import StorageService from '../../shared/services/storage-service';
+
 import colors from '../../shared/styles/colors';
 import fonts from '../../shared/styles/fonts';
 
@@ -39,8 +42,18 @@ export function UserIdentification() {
     setName(value);
   }
 
-  function handleSubmit() {
-    navigation.navigate('Confirmation');
+  async function handleSubmit() {
+
+    if(!name) {
+      return Alert.alert('Me diz como chamar você 😭');
+    }
+
+    try {
+      await StorageService.setItem(StorageKeyEnum.USER, name);
+      navigation.navigate('UserConfirmation');
+    } catch (error) {
+      Alert.alert('Não foi possível salvar o seu nome. 😭');
+    }
   }
 
   return (

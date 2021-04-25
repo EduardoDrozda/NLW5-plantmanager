@@ -3,10 +3,13 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 
 import { Welcome } from '../pages/Welcome';
 import { UserIdentification } from '../pages/UserIdentification';
-import { Confirmation } from '../pages/Confirmation';
 
 import colors from '../shared/styles/colors';
-import { PlantSelect } from '../pages/PlantSelect';
+import PlantSave from '../pages/PlantSave';
+import { UserConfirmation } from '../pages/UserConfirmation';
+import { PlantConfirmation } from '../pages/PlantConfirmation';
+import MyPlants from '../pages/MyPlants';
+import AuthRoutes from './tab.routes';
 
 const stackRoutes = createStackNavigator();
 
@@ -33,13 +36,28 @@ const AppRoutes: React.FC = () => (
     />
 
     <stackRoutes.Screen
-      name="Confirmation"
-      component={Confirmation}
+      name="UserConfirmation"
+      component={UserConfirmation}
     />
 
     <stackRoutes.Screen
       name="PlantSelect"
-      component={PlantSelect}
+      component={AuthRoutes}
+    />
+
+    <stackRoutes.Screen
+      name="PlantSave"
+      component={PlantSave}
+    />
+
+    <stackRoutes.Screen
+      name="PlantConfirmation"
+      component={PlantConfirmation}
+    />
+
+    <stackRoutes.Screen
+      name="MyPlants"
+      component={AuthRoutes}
     />
 
   </stackRoutes.Navigator>

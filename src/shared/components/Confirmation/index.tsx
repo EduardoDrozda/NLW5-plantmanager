@@ -6,38 +6,51 @@ import {
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/core';
-import { Button } from '../../shared/components/Button';
-import { CustomAreaView } from '../../shared/components/CustomAreaView';
+import { Button } from '../Button';
+import { CustomAreaView } from '../CustomAreaView';
 
-import colors from '../../shared/styles/colors';
-import fonts from '../../shared/styles/fonts';
+import colors from '../../styles/colors';
+import fonts from '../../styles/fonts';
 
-export function Confirmation() {
+type Props = {
+  title: string;
+  subtitle: string;
+  buttonTitle: string;
+  icon: 'smile' | 'hug',
+  nextScreen: string;
+}
+
+const emojis = {
+  hug: '🤗',
+  smile: '😁'
+}
+
+export function Confirmation(props: Props) {
 
   const navigation = useNavigation();
 
   function handleMoveOn() {
-    navigation.navigate('PlantSelect');
+    navigation.navigate(props.nextScreen);
   }
 
   return (
     <CustomAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.emoji}>
-          😁
+          {emojis[props.icon]}
         </Text>
 
         <Text style={styles.title}>
-          Prontinho
+          {props.title}
         </Text>
 
         <Text style={styles.subtitle}>
-          Agora vamos começar a cuidar das suas plantinhas com muito cuidado.
+          {props.subtitle}
         </Text>
 
         <View style={styles.footer}>
           <Button
-            title="Começar"
+            title={props.buttonTitle}
             onPress={handleMoveOn}
           />
         </View>
@@ -70,7 +83,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.text,
     textAlign: 'center',
     fontSize: 17,
-    paddingVertical: 10,
+    padding: 15,
     color: colors.heading
   },
   emoji: {

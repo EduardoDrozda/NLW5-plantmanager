@@ -1,17 +1,30 @@
-import React from 'react';
-
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import StorageService from '../../services/storage-service';
 
 import userImg from '../../../assets/user.png';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
+import { StorageKeyEnum } from '../../enums';
 
 export default function Header() {
+
+  const [userName, setUsername] = useState<string>();
+
+  useLayoutEffect(() => {
+    async function loadStorageUsername() {
+      const user = await StorageService.getItem(StorageKeyEnum.USER);
+      setUsername(user || '');
+    } 
+
+    loadStorageUsername();
+  }, [userName]);
+
   return (
     <View style={styles.container}>
       <View>
         <Text style={styles.greeting}>Olá</Text>
-        <Text style={styles.userName}>Eduardo</Text>
+        <Text style={styles.userName}>{userName}</Text>
       </View>
 
       <Image source={userImg} style={styles.image}/>
