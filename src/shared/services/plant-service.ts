@@ -8,6 +8,7 @@ import { StorageKeyEnum } from "../enums";
 import { format } from 'date-fns';
 import { DateUtils } from "../utils";
 import { Guid } from 'guid-typescript';
+import NotificationService from "./notification-service";
 
 class PlantService extends HttpService<IPlant> implements IGenericService<IPlant> {
   constructor() {
@@ -27,12 +28,15 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
       const oldPlants = await this.getStoragePlants();
       const id = Guid.create().toString();
 
+      const notificationId = await this.setNotificationTime(plant);
+
       const newPlant: IStoragePlant = {
         [id]: {
           data: {
             ...plant,
-            identification: id
-          }
+            identification: id,
+          },
+          notificationId
         }
       }
 
@@ -56,6 +60,24 @@ class PlantService extends HttpService<IPlant> implements IGenericService<IPlant
       throw new Error(error);
       
     }
+  }
+
+  private async setNotificationTime(plant: IPlant) {
+    const { times, repeat_every } = plant.frequency;
+
+    return await NotificationService.setNotification({
+      times,
+      repeat_every,
+      timeNotification: plant.dateTimeNotification,
+      content: {
+        title: 'Heeey 🌱',
+        body: `Está na hora de cuidar da sua ${plant.name}`,
+        sound: true,
+        data: {
+          plant
+        }
+      }
+    })
   }
 
   async setStoragePlants(plants: IStoragePlant): Promise<void> {
